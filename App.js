@@ -66,9 +66,13 @@ export default class App extends Component {
     renderInstructions = () =>
         <Text style={style.welcome}>
             Nicks Block Chain Demo.
-            Add a few blocks then edit any of the information and ok it.
-            Then click Validate Chain, any invalid blocks will get a red
-            background. Enjoy!
+            1. Add a few blocks
+            2. Edit any of the information
+            3. Press ok.
+            4. Press Validate Chain
+            5. Results in any invalid blocks getting a red
+            background.
+            Note: This is work in progress...
         </Text>;
 
     addBlock = () => {

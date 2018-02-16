@@ -49,7 +49,7 @@ export default class Block extends React.Component {
         </View>;
 
     renderEditMode = () =>
-        <View style={{backgroundColor: 'green'}}>
+        <View style={style.view}>
             <Text style={style.blockLabel}>
                 #: {this.props.number}
             </Text>
@@ -83,14 +83,14 @@ export default class Block extends React.Component {
 
 const style = StyleSheet.create({
     block: {
-        backgroundColor: 'skyblue',
+        backgroundColor: '#7ec1ec',
         borderRadius: 4,
         borderWidth: 0.5,
         borderColor: '#d6d7da'
 
     },
     badBlock: {
-        backgroundColor: 'red',
+        backgroundColor: '#ebacaf',
         borderRadius: 4,
         borderWidth: 0.5,
         borderColor: '#d6d7da'
@@ -104,5 +104,8 @@ const style = StyleSheet.create({
     textInput: {
         backgroundColor: 'white',
         fontSize:16
+    },
+    view: {
+        backgroundColor: '#9eff89'
     }
 });
