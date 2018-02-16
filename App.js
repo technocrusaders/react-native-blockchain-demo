@@ -22,9 +22,10 @@ export default class App extends Component {
     state = {
         blocks: [{
             payLoad: genesisPayLoad,
-            hash: this.getHash(0, '0', genesisPayLoad), previousHash: '0'
-            , index: 0,
-            isOK: true
+            hash: this.getHash(0, '0', genesisPayLoad),
+            previousHash: '0',
+            index: 0,
+            isValid: true
         }],
         isInstructionsShown: true
     };
@@ -33,17 +34,17 @@ export default class App extends Component {
         <View>
             {this.state.isInstructionsShown ? this.renderInstructions() : null}
 
-            <RaisedTextButton onPress={() => this.setState({isInstructionsShown: !this.state.isInstructionsShown})}
-                              title={this.state.isInstructionsShown ? 'Hide instructions' : 'Show instructions'}/>
+            <RaisedTextButton onPress={this.changeInstructionVisibility}
+                              title={this.getInstructionTitle()}/>
 
             <RaisedTextButton onPress={this.addBlock}
-                              title={'Add'}/>
+                              title='Add'/>
 
             <RaisedTextButton onPress={this.removeBlock}
-                              title={'Remove Last'}/>
+                              title='Remove Last'/>
 
             <RaisedTextButton onPress={this.validateChain}
-                              title={'Validate Chain'}/>
+                              title='Validate Chain'/>
 
             <ScrollView style={style.blockContainer}>
                 {map(this.state.blocks, this.renderBlock)}
@@ -51,7 +52,7 @@ export default class App extends Component {
 
         </View>;
 
-    renderBlock = ({hash, previousHash, payLoad, isOK}, index) =>
+    renderBlock = ({hash, previousHash, payLoad, isValid}, index) =>
         <Block number={index}
                updateHash={(newHash) => this.updateHash(index, newHash)}
                updatePreviousHash={(newPreviousHash) => this.updatePreviousHash(index, newPreviousHash)}
@@ -60,7 +61,7 @@ export default class App extends Component {
                hash={hash}
                payLoad={payLoad}
                previousHash={previousHash}
-               isOK={isOK}
+               isValid={isValid}
         />;
 
     renderInstructions = () =>
@@ -75,24 +76,32 @@ export default class App extends Component {
             Note: This is work in progress...
         </Text>;
 
+    changeInstructionVisibility = () =>
+        this.setState({isInstructionsShown: !this.state.isInstructionsShown});
+
+    getInstructionTitle = () =>
+        this.state.isInstructionsShown ? 'Hide instructions' : 'Show instructions';
+
     addBlock = () => {
-        let blocks = this.state.blocks;
+        const blocks = this.state.blocks;
+        blocks.push(this.getBlock());
+        this.setState({blocks})
+    };
+
+    getBlock = () => {
         const lastBlock = this.getLastBlock();
         const suffix = Math.floor(Math.random() * 100);
         const payLoad = lastBlock.payLoad + suffix;
         const previousHash = lastBlock.hash;
         const index = this.state.blocks.length;
 
-        blocks.push(
-            {
-                payLoad,
-                hash: this.getHash(index, previousHash, payLoad),
-                previousHash,
-                index,
-                isOK: true
-            });
-
-        this.setState({blocks})
+        return {
+            payLoad,
+            hash: this.getHash(index, previousHash, payLoad),
+            previousHash,
+            index,
+            isValid: true
+        }
     };
 
     getLastBlock = () =>
@@ -127,28 +136,24 @@ export default class App extends Component {
     validateChain = () => {
         const blocks = this.state.blocks;
 
-        if (!this.isHashSame(blocks[0])) {
-            blocks[0].isOK = false;
-        }
-
-        for (let i = 1; i < blocks.length; i++) {
+        for (let i = 0; i < blocks.length; i++) {
             const currentBlock = blocks[i];
-            const previousBlock = blocks [i - 1];
 
-            if (!this.isHashSame(currentBlock)) {
-                currentBlock.isOK = false;
-                continue;
-            } else {
-                currentBlock.isOK = true;
+            if (i === 0) {
+                blocks[0].isValid = this.isHashSame(blocks[0]);
+                continue
             }
 
-            currentBlock.isOK = (currentBlock.previousHash === previousBlock.hash)
+            const {hash} = blocks [i - 1];
+
+            currentBlock.isValid = this.isHashSame(currentBlock) ?
+                (currentBlock.previousHash === hash) : false
         }
         this.setState({blocks})
     };
 
-    isHashSame = (block) =>
-        (block.hash === this.getHash(block.index, block.previousHash, block.payLoad));
+    isHashSame = ({hash, index, previousHash, payLoad}) =>
+        (hash === this.getHash(index, previousHash, payLoad));
 
 }
 

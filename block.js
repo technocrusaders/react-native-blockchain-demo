@@ -13,23 +13,20 @@ export default class Block extends React.Component {
         updatePayLoad: PropTypes.func,
         updateHash: PropTypes.func,
         updatePreviousHash: PropTypes.func,
-        isOK: PropTypes.bool
+        isValid: PropTypes.bool
     };
 
     state = {
         isEditMode: false
     };
 
-    render = () => {
-        if (this.state.isEditMode) {
-            return (this.renderEditMode())
-        } else {
-            return (this.renderViewMode())
-        }
-    };
+    render = () =>
+        this.state.isEditMode ?
+            this.renderEditMode() :
+            this.renderViewMode();
 
     renderViewMode = () =>
-        <View style={this.props.isOK ? style.block : style.badBlock}>
+        <View style={this.props.isValid ? style.block : style.badBlock}>
             <Text style={style.blockLabel}>
                 #: {this.props.number}
             </Text>
@@ -43,7 +40,7 @@ export default class Block extends React.Component {
                 Previous Hash : {this.props.previousHash}
             </Text>
 
-            <RaisedTextButton title={'Edit'}
+            <RaisedTextButton title='Edit'
                               onPress={() => this.setState({isEditMode: true})}>
             </RaisedTextButton>
         </View>;
@@ -103,7 +100,7 @@ const style = StyleSheet.create({
     },
     textInput: {
         backgroundColor: 'white',
-        fontSize:16
+        fontSize: 16
     },
     view: {
         backgroundColor: '#9eff89'
